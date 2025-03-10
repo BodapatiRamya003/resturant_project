@@ -60,60 +60,60 @@ class User(UserMixin,db.Model):
 
 class Category(db.Model):
     id: so.Mapped[int] = so.mapped_column(primary_key=True)
-    name: so.Mapped[str] = so.mapped_column(sa.String(100), unique=True, index=True)
+    name: so.Mapped[str] = so.mapped_column(sa.String(100), index=True)
     varient: so.Mapped[Optional[str]] = so.mapped_column(sa.String(255))
 
     def __repr__(self):
         return '<Category {}>'.format(self.name)
 
-class Item(db.Model):
-    id: so.Mapped[int] = so.mapped_column(primary_key=True)
-    name: so.Mapped[str] = so.mapped_column(sa.String(100), unique=True, index=True)
-    category: so.Mapped[str] = so.mapped_column(sa.String(50), index=True)
-    image: so.Mapped[Optional[str]] = so.mapped_column(sa.String(255))
-    price: so.Mapped[float] = so.mapped_column(sa.Float, nullable=False)
-    ingredient: so.Mapped[Optional[str]] = so.mapped_column(sa.Text)
-    gst_percentage: so.Mapped[float] = so.mapped_column(sa.Float, default=0.0)
+# class Item(db.Model):
+#     id: so.Mapped[int] = so.mapped_column(primary_key=True)
+#     name: so.Mapped[str] = so.mapped_column(sa.String(100), unique=True, index=True)
+#     category: so.Mapped[str] = so.mapped_column(sa.String(50), index=True)
+#     image: so.Mapped[Optional[str]] = so.mapped_column(sa.String(255))
+#     price: so.Mapped[float] = so.mapped_column(sa.Float, nullable=False)
+#     ingredient: so.Mapped[Optional[str]] = so.mapped_column(sa.Text)
+#     gst_percentage: so.Mapped[float] = so.mapped_column(sa.Float, default=0.0)
     
-    def __repr__(self):
-        return '<Item {}>'.formate(self.name)
+#     def __repr__(self):
+#         return '<Item {}>'.formate(self.name)
 
-class Orders(db.Model):
-    id: so.Mapped[int] = so.mapped_column(primary_key=True)
-    user_id: so.Mapped[int] = so.mapped_column(sa.Integer, sa.ForeignKey('user.id'), nullable=False)
-    timestamp: so.Mapped[datetime] = so.mapped_column(index=True, default=lambda: datetime.now(timezone.utc))
-    status: so.Mapped[str] = so.mapped_column(sa.String(32), index=True)
+# class Order(db.Model):
+#     id: so.Mapped[int] = so.mapped_column(primary_key=True)
+#     user_id: so.Mapped[int] = so.mapped_column(sa.Integer, sa.ForeignKey('user.id'), nullable=False)
+#     timestamp: so.Mapped[datetime] = so.mapped_column(index=True, default=lambda: datetime.now(timezone.utc))
+#     status: so.Mapped[str] = so.mapped_column(sa.String(32), index=True)
 
-    def __repr__(self):
-        return '<Orders {}>'.formate(self.user_id)
+#     def __repr__(self):
+#         return '<Order {}>'.formate(self.user_id)
 
-class OrderItem(db.Model):
-    id: so.Mapped[int] = so.mapped_column(primary_key=True)
-    order_id: so.Mapped[int] = so.mapped_column(sa.ForeignKey(Orders.id), index=True)
-    item:  so.Mapped[str] = so.mapped_column(sa.String(128), index=True)
-    quantity: so.Mapped[int] = so.mapped_column(sa.Integer, default=1)
+# class OrderItem(db.Model):
+#     id: so.Mapped[int] = so.mapped_column(primary_key=True)
+#     order_id: so.Mapped[int] = so.mapped_column(sa.ForeignKey(Order.id), index=True)
+#     item:  so.Mapped[str] = so.mapped_column(sa.String(128), index=True)
+#     quantity: so.Mapped[int] = so.mapped_column(sa.Integer, default=1)
 
-    def __repr__(self):
-        return '<OrderItem {}>'.formate(self.order_id)
+#     def __repr__(self):
+#         return '<OrderItem {}>'.formate(self.order_id)
     
-class Table(db.Model):
-    id: so.Mapped[int] = so.mapped_column(primary_key=True)
-    seats: so.Mapped[int] = so.mapped_column(sa.Integer, nullable=False)
-    price: so.Mapped[float] = so.mapped_column(sa.Float, nullable=False)
-    available: so.Mapped[bool] = so.mapped_column(sa.Boolean, default=True)
+# class Table(db.Model):
+#     id: so.Mapped[int] = so.mapped_column(primary_key=True)
+#     seats: so.Mapped[int] = so.mapped_column(sa.Integer, nullable=False)
+#     price: so.Mapped[float] = so.mapped_column(sa.Float, nullable=False)
+#     available: so.Mapped[bool] = so.mapped_column(sa.Boolean, default=True)
 
-    def __repr__(self):
-        return '<table {}>'.formate(self.seats)  
+#     def __repr__(self):
+#         return '<table {}>'.formate(self.seats)  
 
-class RatingOrderItem(db.Model):
-    id: so.Mapped[int] = so.mapped_column(primary_key=True)
-    order_item_id: so.Mapped[int] = so.mapped_column(sa.ForeignKey(OrderItem.id), index=True)
-    user_id: so.Mapped[int] = so.mapped_column(sa.Integer, sa.ForeignKey('user.id'), index=True)
-    rating: so.Mapped[int] = so.mapped_column(sa.Integer, nullable=False)  
-    remark: so.Mapped[Optional[str]] = so.mapped_column(sa.String(255))
+# class RatingOrderItem(db.Model):
+#     id: so.Mapped[int] = so.mapped_column(primary_key=True)
+#     order_item_id: so.Mapped[int] = so.mapped_column(sa.ForeignKey(OrderItem.id), index=True)
+#     user_id: so.Mapped[int] = so.mapped_column(sa.Integer, sa.ForeignKey('user.id'), index=True)
+#     rating: so.Mapped[int] = so.mapped_column(sa.Integer, nullable=False)  
+#     remark: so.Mapped[Optional[str]] = so.mapped_column(sa.String(255))
 
-    def __repr__(self):
-        return '<ratingorderitem {}>'.formate(self.order_item_id)  
+#     def __repr__(self):
+#         return '<ratingorderitem {}>'.formate(self.order_item_id)  
     
 @login.user_loader
 def load_user(id):

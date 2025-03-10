@@ -1,0 +1,39 @@
+{% extends "base.html" %}
+
+{% block content %}
+<h1>ratingorderitem</h1>
+<form action="" method="post">
+    {{ form.hidden_tag() }}
+    <p>
+        {{ form.order_item.label }}<br>
+        {{ form.order_item(size=32) }}<br>
+        {% for error in form.order_item.errors %}
+        <span style="color: red;">[{{ error }}]</span>
+         {% endfor %}
+    </p>
+    <p>
+        {{ form.rating.label }}<br>
+        {{ form.rating(size=32) }}<br>
+        {% for error in form.rating.errors %}
+        <span style="color: red;">[{{ error }}]</span>
+        {% endfor %}
+    </p>
+    <p>
+        {{ form.remark.label }}<br>
+        {{ form.remark(size=32) }}<br>
+        {% for error in form.remark.errors %}
+        <span style="color: red;">[{{ error }}]</span>
+        {% endfor %}
+    </p>
+    <p>
+        {{ form.user.label }}<br>
+        {{ form.user(size=32) }}<br>
+        {% for error in form.usererrors %}
+        <span style="color: red;">[{{ error }}]</span>
+        {% endfor %}
+    </p>
+    <p>{{ form.submit() }}</p>
+</form>
+{% endblock %}    
+
+

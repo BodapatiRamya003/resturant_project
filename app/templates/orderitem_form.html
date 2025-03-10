@@ -1,0 +1,32 @@
+{% extends "base.html" %}
+
+{% block content %}
+<h1>orderitem</h1>
+<form action="" method="post">
+    {{ form.hidden_tag() }}
+    <p>
+        {{ form.order_id.label }}<br>
+        {{ form.order_id(size=32) }}<br>
+        {% for error in form.order_id.errors %}
+        <span style="color: red;">[{{ error }}]</span>
+         {% endfor %}
+    </p>
+    <p>
+        {{ form.item.label }}<br>
+        {{ form.item(size=32) }}<br>
+        {% for error in form.item.errors %}
+        <span style="color: red;">[{{ error }}]</span>
+        {% endfor %}
+    </p>
+    <p>
+        {{ form.quantity.label }}<br>
+        {{ form.quantity(size=32) }}<br>
+        {% for error in form.quantity.errors %}
+        <span style="color: red;">[{{ error }}]</span>
+        {% endfor %}
+    </p>
+    <p>{{ form.submit() }}</p>
+</form>
+{% endblock %}    
+
+

@@ -10,8 +10,9 @@ from flask_login import current_user, login_user, logout_user, login_required
 
 from app import db
 from app import app
-from app.models import User
-from app.forms import LoginForm,RegistrationForm,UpdateProfileForm
+from app.models import User, Category #, Item, Order, OrderItem, Table, RatingOrderItem
+
+from app.forms import LoginForm,RegistrationForm,UpdateProfileForm, CategoryForm, DeleteCategoryForm #, ItemForm, OrderForm, orderItemForm, tableForm, ratingOrderForm
 
 @app.route("/")
 @app.route("/index")
@@ -21,8 +22,8 @@ def index():
 
 @app.route("/register", methods=["GET", "POST"])
 def register():
-    # if current_user.is_authenticated:
-    #     return redirect(url_for("index"))
+    if current_user.is_authenticated:
+        return redirect(url_for("index"))
     form = RegistrationForm()
     if form.validate_on_submit():
         user = User(username=form.username.data, email=form.email.data, phone=form.phone.data)
@@ -32,9 +33,6 @@ def register():
         flash("Congratulations, you are now a registered user!")
         return redirect(url_for("index"))
     return render_template("register.html", title="Register", form=form)
-
-@app.route('/upload', methods=['GET', 'POST'])
-
 
 @app.route("/login",  methods=["GET", "POST"])
 def login():
@@ -98,3 +96,96 @@ def profile(username):
     
     return render_template('profile.html', form=form, user=user)
     
+@app.route("/categories", methods=["GET", "POST"])
+def categories():
+    categories = db.session.scalars(sa.select(Category)).all()
+    form = CategoryForm()
+    if form.validate_on_submit():
+        category = Category(name=form.name.data, varient=form.varient.data)
+        db.session.add(category)
+        db.session.commit()
+        flash("Congratulations, you are now created category!")
+        return redirect(url_for("categories"))
+    return render_template("categories.html", title="category", form=form, categories=categories)
+
+@app.route("/categories/<int:category_id>/delete", methods=["POST"])
+@login_required
+def delete_category(category_id):
+    if not current_user.is_admin:
+        flash("Permission denied", "danger")
+        return redirect(url_for("categories"))
+    category = db.first_or_404(sa.select(Category).where(Category.id == category_id))
+
+    if not category:
+        flash("Unable to delete category")
+        return redirect(url_for("categories"))
+    db.session.delete(category)
+    db.session.commit()
+    flash("Category successfully deleted")
+    return redirect(url_for("categories"))
+
+# @app.route("/item", methods=["GET", "POST"])
+# def item():
+#     form = ItemForm()
+#     if form.validate_on_submit():
+#         item = db.session.scalar(
+#             sa.select(Item).where(name=form.name.data, category=form.category.data, image=form.image.data, price=form.price.data, ingredient=form.ingredient.data, gst_percentage=form.gst_percentage.data)
+#         )
+#         if user is None or not user.check_password(form.password.data):
+#             flash("Invalid username or password")
+#             return redirect(url_for("login"))
+#         item(user, remember=form.remember_me.data)
+#         next_page = request.args.get("next")
+#         if not next_page or urlsplit(next_page).netloc != '':
+#             next_page = url_for("index")
+        
+#         db.session.add(item)
+#         flash("Congratulations, you are now created item!")
+#         return redirect(next_page)
+#     return render_template("item_form.html", title="item", form=form)
+
+
+# @app.route("/order", methods=["GET", "POST"])
+# def order():
+#     form = OrderForm()
+#     if form.validate_on_submit():
+#         order = Order(user_id=form.user_id.data, timestamp=form.timestamp.data, status=form.status.data) 
+#         db.session.add(order)
+#         flash("Congratulations, you are now created order!")
+#         return redirect(url_for("index"))
+#     return render_template("order_form.html", title="order", form=form)
+
+# @app.route("/orderitem", methods=["GET", "POST"])
+# def orderitem():
+#     form = orderItemForm()
+#     if form.validate_on_submit():
+#         order = OrderItem(order=form.order.data, item=form.timestamp.data, status=form.status.data) 
+#         db.session.add(orderitem)
+#         flash("Congratulations, you are now created orderitem!")
+#         return redirect(url_for("index"))
+#     return render_template("orderitem_form.html", title="orderitem", form=form)
+
+
+
+# @app.route("/table", methods=["GET", "POST"])
+# def table():
+#     form = tableForm()
+#     if form.validate_on_submit():
+#         order = Table(seats=form.seats.data, price=form.price.data, available=form.available.data) 
+#         db.session.add(table)
+#         flash("Congratulations, you are now created table!")
+#         return redirect(url_for("index"))
+#     return render_template("table_form.html", title="table", form=form)
+
+
+# @app.route("/ratingorderitem", methods=["GET", "POST"])
+# def ratingorderitem():
+#     form = ratingOrderForm()
+#     if form.validate_on_submit():
+#         order = RatingOrderItem(order_item=form.order_item.data, rating=form.rating.data, remark=form.remark.data, user=form.user.data) 
+#         db.session.add(table)
+#         flash("Congratulations, you are now created ratingorderitem!")
+#         return redirect(url_for("index"))
+#     return render_template("rating_form.html", title="ratingorderitem", form=form)
+
+
