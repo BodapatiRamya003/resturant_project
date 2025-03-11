@@ -10,9 +10,9 @@ from flask_login import current_user, login_user, logout_user, login_required
 
 from app import db
 from app import app
-from app.models import User, Category #, Item, Order, OrderItem, Table, RatingOrderItem
+from app.models import User, Category,Item#,order, OrderItem, Table, RatingOrderItem
 
-from app.forms import LoginForm,RegistrationForm,UpdateProfileForm, CategoryForm, DeleteCategoryForm #, ItemForm, OrderForm, orderItemForm, tableForm, ratingOrderForm
+from app.forms import LoginForm,RegistrationForm,UpdateProfileForm, CategoryForm, DeleteCategoryForm, ItemForm#,DeleteItemForm,orderForm, orderItemForm, tableForm, ratingOrderForm
 
 @app.route("/")
 @app.route("/index")
@@ -108,6 +108,52 @@ def categories():
         return redirect(url_for("categories"))
     return render_template("categories.html", title="category", form=form, categories=categories)
 
+@app.route("/categories/<int:category_id>", methods=["GET", "POST"])
+@login_required
+def category(category_id):
+    category = db.first_or_404(sa.select(Category).where(Category.id == category_id))
+    items = db.session.scalars(sa.select(Item).where(Item.category_id == category_id)).all()
+    form = ItemForm()
+
+    if request.method=="POST" and not current_user.is_anonymous or current_user.is_admin:
+        if form.validate_on_submit():
+            item = Item(
+                name=form.name.data,
+                item_category=category,
+                price=form.price.data,
+                ingredient=form.ingredient.data,
+                gst_percentage=form.gst_percentage.data
+            )
+            if form.image.data:
+                file = form.image.data
+                filename = secure_filename(file.filename)
+                file.save(os.path.join(app.config['IMAGE_UPLOAD_FOLDER'], filename))
+                
+                item.image =f'images/items/{filename}'
+            db.session.add(item)
+            db.session.commit()
+            flash("Congratulations, you have created a new item!")
+            return redirect(url_for("category", category_id=category_id))
+    
+    return render_template("category.html", form=form, category=category, items=items)
+
+@app.route("/categories/<int:category_id>/edit", methods=["GET", "POST"])
+def edit_category(category_id):
+    if not current_user.is_admin:
+        flash("Permission denied", "danger")
+        return redirect(url_for("categories"))
+
+    category = db.first_or_404(sa.select(Category).where(Category.id == category_id))
+    form = CategoryForm(obj=category)
+   
+    if form.validate_on_submit():
+        category.name = form.name.data
+        category.varient = form.varient.data
+        db.session.commit()
+        flash("Category successfully updated")
+        return redirect(url_for("category", category_id=category.id))
+    return render_template("category_form.html", title="Edit Category", form=form)
+
 @app.route("/categories/<int:category_id>/delete", methods=["POST"])
 @login_required
 def delete_category(category_id):
@@ -124,26 +170,41 @@ def delete_category(category_id):
     flash("Category successfully deleted")
     return redirect(url_for("categories"))
 
-# @app.route("/item", methods=["GET", "POST"])
-# def item():
-#     form = ItemForm()
-#     if form.validate_on_submit():
-#         item = db.session.scalar(
-#             sa.select(Item).where(name=form.name.data, category=form.category.data, image=form.image.data, price=form.price.data, ingredient=form.ingredient.data, gst_percentage=form.gst_percentage.data)
-#         )
-#         if user is None or not user.check_password(form.password.data):
-#             flash("Invalid username or password")
-#             return redirect(url_for("login"))
-#         item(user, remember=form.remember_me.data)
-#         next_page = request.args.get("next")
-#         if not next_page or urlsplit(next_page).netloc != '':
-#             next_page = url_for("index")
-        
-#         db.session.add(item)
-#         flash("Congratulations, you are now created item!")
-#         return redirect(next_page)
-#     return render_template("item_form.html", title="item", form=form)
+@app.route("/categories/<int:category_id>/items/<int:item_id>/edit", methods=["GET", "POST"])
+@login_required
+def edit_item(category_id, item_id):
+    if current_user.is_anonymous or not current_user.is_admin:
+        flash("Permission denied", "danger")
+        return redirect(url_for("categories"))
 
+    item = db.first_or_404(sa.select(Item).where(Item.id == item_id, Item.category_id == category_id))
+
+    form = ItemForm()
+    
+    if request.method == "GET":
+        form.name.data = item.name
+        form.price.data = item.price
+        form.ingredient.data = item.ingredient
+        form.gst_percentage.data = item.gst_percentage
+    
+    if form.validate_on_submit():
+        item.name=form.name.data
+        item.price=form.price.data
+        item.ingredient=form.ingredient.data
+        item.gst_percentage=form.gst_percentage.data
+
+        if form.image.data:
+            file = form.image.data
+            filename = secure_filename(file.filename)
+            file.save(os.path.join(app.config['IMAGE_UPLOAD_FOLDER'], filename))
+            item.image =f'images/items/{filename}'
+
+        db.session.commit()
+        flash("Category successfully updated")
+        return redirect(url_for("category", category_id=category_id))
+    else:
+        print(form.errors)
+    return render_template("item_form.html", title="Edit Item", form=form, item=item)
 
 # @app.route("/order", methods=["GET", "POST"])
 # def order():

@@ -62,21 +62,24 @@ class Category(db.Model):
     id: so.Mapped[int] = so.mapped_column(primary_key=True)
     name: so.Mapped[str] = so.mapped_column(sa.String(100), index=True)
     varient: so.Mapped[Optional[str]] = so.mapped_column(sa.String(255))
+    items: so.WriteOnlyMapped['Item'] = so.relationship(back_populates='item_category')
 
     def __repr__(self):
         return '<Category {}>'.format(self.name)
 
-# class Item(db.Model):
-#     id: so.Mapped[int] = so.mapped_column(primary_key=True)
-#     name: so.Mapped[str] = so.mapped_column(sa.String(100), unique=True, index=True)
-#     category: so.Mapped[str] = so.mapped_column(sa.String(50), index=True)
-#     image: so.Mapped[Optional[str]] = so.mapped_column(sa.String(255))
-#     price: so.Mapped[float] = so.mapped_column(sa.Float, nullable=False)
-#     ingredient: so.Mapped[Optional[str]] = so.mapped_column(sa.Text)
-#     gst_percentage: so.Mapped[float] = so.mapped_column(sa.Float, default=0.0)
+class Item(db.Model):
+    id: so.Mapped[int] = so.mapped_column(primary_key=True)
+    name: so.Mapped[str] = so.mapped_column(sa.String(100), unique=True, index=True)
+    image: so.Mapped[Optional[str]] = so.mapped_column(sa.String(255))
+    price: so.Mapped[float] = so.mapped_column(sa.Float, nullable=False)
+    ingredient: so.Mapped[Optional[str]] = so.mapped_column(sa.Text)
+    gst_percentage: so.Mapped[float] = so.mapped_column(sa.Float, default=0.0)
     
-#     def __repr__(self):
-#         return '<Item {}>'.formate(self.name)
+    category_id: so.Mapped[int] = so.mapped_column(sa.ForeignKey(Category.id), index=True)
+    item_category: so.Mapped[Category] = so.relationship(back_populates='items')
+    
+    def __repr__(self):
+        return '<Item {}>'.formate(self.name)
 
 # class Order(db.Model):
 #     id: so.Mapped[int] = so.mapped_column(primary_key=True)

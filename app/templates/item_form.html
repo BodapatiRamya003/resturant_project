@@ -1,20 +1,17 @@
-{% extends "base.html" %}
-
-{% block content %}
-<h1>item</h1>
-<form action="" method="post">
+<form action="" method="post" enctype="multipart/form-data">
     {{ form.hidden_tag() }}
+    {% if item and item.image %}
+        <p>
+            <strong>Current Image:</strong><br>
+            <img src="{{ url_for('static', filename=item.image) }}" alt="Item Image" style="max-width: 200px; max-height: 200px;">
+        </p>
+    {% else %}
+        <p>No image uploaded yet.</p>
+    {% endif %}
     <p>
         {{ form.name.label }}<br>
         {{ form.name(size=32) }}<br>
         {% for error in form.name.errors %}
-        <span style="color: red;">[{{ error }}]</span>
-         {% endfor %}
-    </p>
-    <p>
-        {{ form.category.label }}<br>
-        {{ form.category(size=32) }}<br>
-        {% for error in form.category.errors %}
         <span style="color: red;">[{{ error }}]</span>
         {% endfor %}
     </p>
@@ -50,5 +47,3 @@
         <input type="submit" value="Add item">
     </p>
 </form>
-{% endblock %}    
-

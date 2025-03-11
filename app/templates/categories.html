@@ -5,10 +5,13 @@
     {% for category in categories %}
         <table>
             <tr valign="top">
-                <td><strong>Name </strong></td>
-                {% if category.name %}
-                <td>: {{ category.name }}</td>
-                {% endif %}
+                <td>
+                    <strong>
+                        <a href="{{ url_for('category', category_id=category.id) }}">
+                        {{ category.name }}
+                        </a>
+                    </strong>
+                </td>
             </tr>
             <tr valign="top">
                 <td><strong>Varient </strong></td>
@@ -19,6 +22,7 @@
             {% if current_user.is_admin %}
             <tr valign="top">
                 <td>
+                    <a href="{{ url_for('edit_category', category_id=category.id) }}">Edit</a>
                     <form action="{{ url_for('delete_category', category_id=category.id) }}" method="POST">
                     <button type="submit">Delete</button>
                     </form>

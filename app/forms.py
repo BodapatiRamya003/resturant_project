@@ -8,7 +8,8 @@ from wtforms import (
     PasswordField, 
     BooleanField, 
     SubmitField, 
-    FileField
+    FileField,
+    FloatField
 )
 
 from app import db
@@ -59,19 +60,20 @@ class UpdateProfileForm(FlaskForm):
 class CategoryForm(FlaskForm):
     name = StringField("Name", validators=[DataRequired()])
     varient = StringField("Varient", validators=[DataRequired()])
-    submit = SubmitField("Category")
+    submit = SubmitField("Create")
 
 class DeleteCategoryForm(FlaskForm):
     submit = SubmitField("Delete")
 
-# class ItemForm(FlaskForm):
-#     name = StringField("Name", validators=[DataRequired()])
-#     category = StringField("Category", validators=[DataRequired()])
-#     image = FileField('Upload Image',validators=[FileAllowed(['jpg', 'png', 'jpeg'], 'Images only!')])
-#     price = StringField("Price", validators=[DataRequired()])
-#     ingredient = StringField("Ingredient", validators=[DataRequired()])
-#     gst_percentage = StringField("GST Percentage", validators=[DataRequired()])
-#     submit = SubmitField("Add Item")
+class ItemForm(FlaskForm):
+     name = StringField("Name", validators=[DataRequired()])
+     image = FileField('Upload Image',validators=[FileAllowed(['jpg', 'png', 'jpeg'], 'Images only!')])
+     price = StringField("Price", validators=[DataRequired()])
+     ingredient = StringField("Ingredient", validators=[DataRequired()])
+     gst_percentage = FloatField("GST Percentage", validators=[DataRequired()])
+     submit = SubmitField("Add Item")
+class DeleteCategoryForm(FlaskForm):
+    submit = SubmitField("Delete")
 
 # class OrderForm(FlaskForm):
 #     user_id = StringField("User ID", validators=[DataRequired()])

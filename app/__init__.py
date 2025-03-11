@@ -7,10 +7,10 @@ from flask_login import LoginManager, UserMixin
 
 app = Flask(__name__)
 app.config.from_object(Config)
-app.config['UPLOAD_FOLDER'] = os.path.join(os.path.dirname(os.path.abspath(__file__)), 'static', 'images', 'avatars')
-app.config['MAX_CONTENT_LENGTH'] = 1 * 1024 * 1024
-if not os.path.exists(app.config['UPLOAD_FOLDER']):
-    os.makedirs(app.config['UPLOAD_FOLDER'])
+if not os.path.exists(app.config['AVATAR_UPLOAD_FOLDER']):
+    os.makedirs(app.config['AVATAR_UPLOAD_FOLDER'])
+if not os.path.exists(app.config['IMAGE_UPLOAD_FOLDER']):
+    os.makedirs(app.config['IMAGE_UPLOAD_FOLDER'])
 db = SQLAlchemy(app)
 migrate = Migrate(app, db)
 login = LoginManager(app)
